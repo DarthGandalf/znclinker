@@ -5,8 +5,13 @@ use warnings;
 use POE qw(Component::IRC::State Component::IRC::Plugin::Connector);
 use IO::File;
 use Data::Munge;
+use POE::Component::Server::HTTP;
+use HTTP::Status;
+use HTTP::Request::Params;
+use JSON;
 
-my $nspass="";
+my $githubpass = `cat githubpass`;
+chomp $githubpass;
 
 my $freenode = POE::Component::IRC::State->spawn(
 		nick => 'ZNC-Linker',
@@ -46,6 +51,60 @@ POE::Session->create(
 		},
 	],
 );
+
+my @github_targets = (
+	{
+		network => $freenode,
+		channel => '#znc',
+	},
+);
+
+POE::Component::Server::HTTP->new(
+	Port => 8000,
+	ContentHandler => {
+		'/' => sub {
+			my ($request, $response) = @_;
+			$response->code(404);
+			return RC_OK;
+		},
+		$githubpass => sub {
+			my ($request, $response) = @_;
+			my $parser = HTTP::Request::Params->new({req => $request});
+			my $payload = $parser->params->{payload};
+			my $obj = decode_json $payload;
+
+			my $branch = $obj->{ref};
+			$branch =~ s#^refs/heads/##;
+			
+			for my $target (@github_targets) {
+				my $network = $target->{network};
+				my $channel = $target->{channel};
+
+				$network->yield(privmsg=>$channel=>"[$branch] $obj->{compare}");
+				my $i = 0;
+				for my $commit (@{$obj->{commits}}) {
+					if ($i++ > 5) {
+						$network->yield(privmsg=>$channel=>"and more...");
+						last;
+					}
+					my $id = $commit->{id};
+					$id =~ s/^.{10}\K.*//;
+					my $msg = $commit->{message};
+					$msg =~ s/\n.*//;
+					$msg =~ s/^.{100}\K.+/.../;
+					$network->yield(privmsg=>$channel=>"$id: $commit->{author}{name} - $msg");
+				}
+			}
+
+			$response->code(RC_OK);
+			$response->content("Thanks");
+			return RC_OK;
+		},
+	},
+	Headers => { Server => 'Server' },
+);
+
+
 
 $poe_kernel->run();
 exit 0;
@@ -135,7 +194,7 @@ sub common_public {
 						$re = qr/$old/;
 					}
 					$what = Data::Munge::replace($str, $re, $new, $g);
-					$heap->{irc}->yield(privmsg=>$chan=>"$nick meant: “$what”");
+					$heap->{irc}->yield(privmsg=>$chan=>"$nick meant: “$what”") if $what ne $str;
 				};
 				if ($@) {
 					print $@;
@@ -161,7 +220,7 @@ sub common_public {
 	if ($what=~/^!request/) {
 		$heap->{irc}->yield(privmsg=>$chan=>"$nick, ZNC is free software. Just install and use it. If you wanted free BNC account instead, go somewhere else.");
 	}
-	if ($what eq '!win') {
+	if ($what=~/^!win/) {
 		$heap->{irc}->yield(privmsg=>$chan=>'ZNC for Windows: http://code.google.com/p/znc-msvc/wiki/WikiStart?tm=6');
 	}
 	if ($what eq '!help') {
@@ -181,7 +240,6 @@ sub common_public {
 }
 
 sub msg {
-	my ($heap, $mask, $recip, $text) = @_[HEAP, ARG0 .. ARG2];
 }
 
 
