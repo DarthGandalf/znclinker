@@ -262,6 +262,6 @@ sub gh_issue {
 		$heap->{irc}->yield(privmsg=>$chan=>"$data->{html_url} “$data->{title}” ($data->{state})");
 	} else {
 		my $error = $response->[0]->status_line;
-		$heap->{irc}->yield(privmsg=>$chan=>"https://github.com/znc/znc/issues/$issue $error");
+		$heap->{irc}->yield(privmsg=>$chan=>"https://github.com/znc/znc/issues/$issue – $error");
 	}
 }
