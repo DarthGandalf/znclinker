@@ -6,6 +6,7 @@ use POE qw(Component::IRC::State Component::IRC::Plugin::Connector);
 use IO::File;
 use Data::Munge;
 use POE::Component::Server::HTTP;
+use POE::Component::Client::HTTP;
 use HTTP::Status;
 use HTTP::Request::Params;
 use JSON;
@@ -29,6 +30,10 @@ my $efnet = POE::Component::IRC::State->spawn(
 		usessl => 1,
 ) or die "Can't load efnet IRC Component! $!";
 
+POE::Component::Client::HTTP->spawn(
+	Alias => 'ua',
+);
+
 POE::Session->create(
 	package_states => [
 		'main' => {
@@ -37,6 +42,7 @@ POE::Session->create(
 			irc_001 => 'common_001',
 			irc_public => 'common_public',
 			irc_msg => 'msg',
+			gh_issue => 'gh_issue',
 		},
 	],
 );
@@ -48,6 +54,7 @@ POE::Session->create(
 			irc_001 => 'ef_001',
 			irc_public => 'common_public',
 			irc_msg => 'msg',
+			gh_issue => 'gh_issue',
 		},
 	],
 );
@@ -157,7 +164,7 @@ sub _default {
 }
 
 sub common_public {
-	my ($heap, $mask, $where, $what) = @_[HEAP, ARG0 .. ARG2];
+	my ($kernel, $heap, $mask, $where, $what) = @_[KERNEL, HEAP, ARG0 .. ARG2];
 	my ($nick) = $mask=~/^(.*)!/;
 	my $chan = $where->[0];
 
@@ -239,12 +246,22 @@ sub common_public {
 		$heap->{irc}->yield(privmsg=>$chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you checked http://wiki.znc.in/FAQ before. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is false alarm.");
 	}
 	if (my ($issue) = $what=~/#(\d+)/) {
-		$heap->{irc}->yield(privmsg=>$chan=>"https://github.com/znc/znc/issues/$issue //TODO: go to github, get the title and show it here");
+		$kernel->post('ua', "request", "gh_issue", HTTP::Request->new(GET=>"https://api.github.com/repos/znc/znc/issues/$issue"), {chan=>$chan, issue=>$issue});
 	}
 }
 
 sub msg {
 }
 
-
-
+sub gh_issue {
+	my ($heap, $request, $response) = @_[HEAP, ARG0 .. ARG1];
+	my $chan = $request->[1]{chan};
+	my $issue = $request->[1]{issue};
+	if ($response->[0]->is_success) {
+		my $data = decode_json($response->[0]->decoded_content);
+		$heap->{irc}->yield(privmsg=>$chan=>"$data->{html_url} “$data->{title}” ($data->{state})");
+	} else {
+		my $error = $response->[0]->status_line;
+		$heap->{irc}->yield(privmsg=>$chan=>"https://github.com/znc/znc/issues/$issue $error");
+	}
+}
