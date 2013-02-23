@@ -245,7 +245,7 @@ sub common_public {
 	if ($what=~/any(?:one|body)\s+(?:around|here)\s*(?:\?|$)/i) {
 		$heap->{irc}->yield(privmsg=>$chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you checked http://wiki.znc.in/FAQ before. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is false alarm.");
 	}
-	if (my ($issue) = $what=~/#(\d+)/) {
+	if (my ($issue) = $what=~m@(?:#|https://github.com/znc/znc/issues/)(\d+)@) {
 		$kernel->post('ua', "request", "gh_issue", HTTP::Request->new(GET=>"https://api.github.com/repos/znc/znc/issues/$issue"), {chan=>$chan, issue=>$issue});
 	}
 }
