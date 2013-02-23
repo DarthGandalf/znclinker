@@ -217,8 +217,9 @@ sub common_public {
 	if (my ($to) = $what=~/^!d\s+(\S+)/) {
 		$heap->{irc}->yield(privmsg=>$chan=>"$to, when asking for help, be sure to provide as much details as possible. What did you try to do, how exactly did you try it (step by step), all error messages, znc version, etc. Without it, the only possible answer is '$to, you're doing something wrong.'");
 	}
-	if ($what=~/^!request/) {
-		$heap->{irc}->yield(privmsg=>$chan=>"$nick, ZNC is free software. Just install and use it. If you wanted free BNC account instead, go somewhere else.");
+	if (my ($to) = $what=~/^!request(?:\s+(\S+))?/) {
+		$to = $to // $nick;
+		$heap->{irc}->yield(privmsg=>$chan=>"$to, ZNC is free software. Just install and use it. If you wanted free BNC account instead, go somewhere else. http://wiki.znc.in/Providers may be a good start.");
 	}
 	if ($what=~/^!win/) {
 		$heap->{irc}->yield(privmsg=>$chan=>'ZNC for Windows: http://code.google.com/p/znc-msvc/wiki/WikiStart?tm=6');
@@ -236,6 +237,9 @@ sub common_public {
 	}
 	if ($what=~/any(?:one|body)\s+(?:around|here)\s*(?:\?|$)/i) {
 		$heap->{irc}->yield(privmsg=>$chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you checked http://wiki.znc.in/FAQ before. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is false alarm.");
+	}
+	if (my ($issue) = $what=~/#(\d+)/) {
+		$heap->{irc}->yield(privmsg=>$chan=>"https://github.com/znc/znc/issues/$issue //TODO: go to github, get the title and show it here");
 	}
 }
 
