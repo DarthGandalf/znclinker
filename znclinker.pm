@@ -105,7 +105,7 @@ sub OnChanMsg {
 		$q=~s/[\r\n]//g;
 		$self->put_chan($chan=>"http://wiki.znc.in/$q");
 	}
-	if ($what=~/any(?:one|body)\s+(?:around|here)\s*(?:\?|$)/i) {
+	if ($what=~/any(?:one|body)\s+(?:around|here|awake)\s*(?:\?|$)/i) {
 		$self->put_chan($chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you checked http://wiki.znc.in/FAQ before. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is false alarm.");
 	}
 	if (my ($issue) = $what=~m@(?:#|https://github.com/znc/znc/(?:issues|pull)/)(\d+)@) {
