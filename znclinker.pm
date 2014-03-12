@@ -108,7 +108,7 @@ sub OnChanMsg {
 	if ($what=~/(?:any|some)(?:one|body)\s+(?:alive|around|awake|here|home|in|there)\s*(?:\?|$)/i) {
 		$self->put_chan($chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked http://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is a false alarm.");
 	}
-	if (my ($issue) = $what=~m@(?:#|https://github.com/znc/znc/(?:issues|pull)/)(\d+)@) {
+	if (my ($issue) = $what=~m@(?:https://github.com/znc/znc/(?:issues|pull)/(\d+)|^#(\d+)[^\S]*|^#(\d+)$|[^\S]*#(\d+)[^\S]+|[^\S]*#(\d+)$)@) {
 		$self->CreateSocket('znclinker::github', $issue, $self->GetNetwork, $chan);
 	}
 
