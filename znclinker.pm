@@ -109,7 +109,9 @@ sub OnChanMsg {
 		$self->put_chan($chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked http://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is a false alarm.");
 	}
 	if (my ($issue) = $what=~m@(?:#|https://github.com/znc/znc/(?:issues|pull)/)(\d+)@) {
-		$self->CreateSocket('znclinker::github', $issue, $self->GetNetwork, $chan);
+		if ($issue > 0) {
+			$self->CreateSocket('znclinker::github', $issue, $self->GetNetwork, $chan);
+		}
 	}
 
 	return $ZNC::CONTINUE;
