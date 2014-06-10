@@ -87,7 +87,7 @@ sub OnChanMsg {
 	if (my ($to) = $what=~/^!d\s+(\S+)/) {
 		$self->put_chan($chan=>"$to, when asking for help, be sure to provide as many details as possible: What did you try to do, how exactly did you try it (step by step), all error messages, ZNC version, etc. Without details, the only possible answer is '$to, you're doing something wrong.'");
 	}
-	if (my ($to) = $what=~/^!request(?:\s+(\S+))?/) {
+	if (my ($to) = $what=~/^!request(?:\s+(\S+))?/i) {
 		$to = $to // $nick;
 		$self->put_chan($chan=>"$to, ZNC is free software. Just install and use it. If you wanted a free BNC account instead, go somewhere else. http://wiki.znc.in/Providers may be a good start.");
 	}
