@@ -92,7 +92,7 @@ sub OnChanMsg {
 		$self->put_chan($chan=>"$to, ZNC is free software. Just install and use it. If you wanted a free BNC account instead, go somewhere else. http://wiki.znc.in/Providers may be a good start.");
 	}
 	if ($what=~/^!win/) {
-		$self->put_chan($chan=>'ZNC for Windows: http://code.google.com/p/znc-msvc/wiki/WikiStart?tm=6');
+		$self->put_chan($chan=>'ZNC for Windows: https://github.com/KiNgMaR/znc');
 	}
 	if ($what eq '!help') {
 		$self->put_chan($chan=>'Need any help?');
