@@ -124,10 +124,6 @@ sub OnUserMsg {
 			network => 'freenode',
 			chan => '#znc',
 		},
-		{
-			network => 'efnet',
-			chan => '#znc',
-		}
 	);
 	for my $target (@targets) {
 		$self->GetUser->FindNetwork($target->{network})->PutIRC("PRIVMSG $target->{chan} :$msg");
