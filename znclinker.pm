@@ -94,8 +94,9 @@ sub OnChanMsg {
 	if ($what=~/^!win/) {
 		$self->put_chan($chan=>'Installing ZNC on Windows: http://wiki.znc.in/Installation#Cygwin');
 	}
-	if ($what eq '!help') {
-		$self->put_chan($chan=>'Need any help?');
+	if (my ($to) = $what=~/^!help(?:\s+(\S+))?/i) {
+		$to = $to // $nick;
+		$self->put_chan($chan=>"$to, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked http://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html");
 	}
 	my $count = 0;
 	for(my ($w,$q,$foo)=($what,'','');($q,$foo,$w)=$w=~/.*?\[\[([^\]\|]*)(\|[^\]]*)?\]\](.*)/ and $count++<4;){
