@@ -122,10 +122,6 @@ sub OnUserMsg {
 	my @targets = (
 		{
 			network => 'freenode',
-			chan => '#znc',
-		},
-		{
-			network => 'freenode',
 			chan => '#znc-dev',
 		},
 	);
