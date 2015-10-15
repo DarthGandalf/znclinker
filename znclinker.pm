@@ -108,7 +108,7 @@ sub OnChanMsg {
 	}
 
 	if (@wiki) {
-		my $wikis = join(', ', @wiki);
+		my $wikis = join(' ', @wiki);
 		$self->put_chan($chan=>$wikis);
 	}
 
