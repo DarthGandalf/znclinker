@@ -98,13 +98,20 @@ sub OnChanMsg {
 		$self->put_chan($chan=>'Need any help?');
 	}
 	my $count = 0;
+	my @wiki;
 	for(my ($w,$q,$foo)=($what,'','');($q,$foo,$w)=$w=~/.*?\[\[([^\]\|]*)(\|[^\]]*)?\]\](.*)/ and $count++<4;){
 		$q=~s/ /_/g;
 		$q=~s/\003\d{0,2}(,\d{0,2})?//g;#color
 		$q=~s/[\x{2}\x{f}\x{16}\x{1f}]//g;
 		$q=~s/[\r\n]//g;
-		$self->put_chan($chan=>"http://wiki.znc.in/$q");
+		push @wiki, "http://wiki.znc.in/$q";
 	}
+
+	if (@wiki) {
+		my $wikis = join(', ', @wiki);
+		$self->put_chan($chan=>$wikis);
+	}
+
 	if ($what=~/(?:any|some)(?:one|body)\s+(?:alive|around|awake|here|home|in|round|there)\s*(?:\?|$)/i) {
 		$self->put_chan($chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked http://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is a false alarm.");
 	}
