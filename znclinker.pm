@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use diagnostics;
+use utf8;
 
 use Data::Munge;
 use HTTP::Response;
