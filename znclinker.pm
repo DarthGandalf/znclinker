@@ -86,7 +86,7 @@ sub OnChanMsg {
 		$self->put_chan($chan=>"$to, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked http://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html");
 	}
 	if (my ($to) = $what=~/^!d\s+(\S+)/) {
-		$self->put_chan($chan=>"$to, when asking for help, be sure to provide as many details as possible: What did you try to do, how exactly did you try it (step by step), all error messages, ZNC version, etc. Without details, the only possible answer is '$to, you're doing something wrong.'");
+		$self->put_chan($chan=>"$to, when asking for help, be sure to provide as many details as possible: What did you try to do, how exactly did you try it (step by step), all error messages, ZNC version, bindhosts, etc. Without details, the only possible answer is '$to, you're doing something wrong.'");
 	}
 	if (my ($to) = $what=~/^!request(?:\s+(\S+))?/i) {
 		$to = $to // $nick;
@@ -99,13 +99,20 @@ sub OnChanMsg {
 		$self->put_chan($chan=>'Need any help?');
 	}
 	my $count = 0;
+	my @wiki;
 	for(my ($w,$q,$foo)=($what,'','');($q,$foo,$w)=$w=~/.*?\[\[([^\]\|]*)(\|[^\]]*)?\]\](.*)/ and $count++<4;){
 		$q=~s/ /_/g;
 		$q=~s/\003\d{0,2}(,\d{0,2})?//g;#color
 		$q=~s/[\x{2}\x{f}\x{16}\x{1f}]//g;
 		$q=~s/[\r\n]//g;
-		$self->put_chan($chan=>"http://wiki.znc.in/$q");
+		push @wiki, "http://wiki.znc.in/$q";
 	}
+
+	if (@wiki) {
+		my $wikis = join(' ', @wiki);
+		$self->put_chan($chan=>$wikis);
+	}
+
 	if ($what=~/(?:any|some)(?:one|body)\s+(?:alive|around|awake|here|home|in|round|there)\s*(?:\?|$)/i) {
 		$self->put_chan($chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked http://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is a false alarm.");
 	}
@@ -123,7 +130,7 @@ sub OnUserMsg {
 	my @targets = (
 		{
 			network => 'freenode',
-			chan => '#znc',
+			chan => '#znc-dev',
 		},
 	);
 	for my $target (@targets) {
