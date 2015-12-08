@@ -85,7 +85,7 @@ sub OnChanMsg {
 		$self->put_chan($chan=>"$to, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked http://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html");
 	}
 	if (my ($to) = $what=~/^!d\s+(\S+)/) {
-		$self->put_chan($chan=>"$to, when asking for help, be sure to provide as many details as possible: What did you try to do, how exactly did you try it (step by step), all error messages, ZNC version, etc. Without details, the only possible answer is '$to, you're doing something wrong.'");
+		$self->put_chan($chan=>"$to, when asking for help, be sure to provide as many details as possible: What did you try to do, how exactly did you try it (step by step), all error messages, ZNC version, bindhosts, etc. Without details, the only possible answer is '$to, you're doing something wrong.'");
 	}
 	if (my ($to) = $what=~/^!request(?:\s+(\S+))?/i) {
 		$to = $to // $nick;
