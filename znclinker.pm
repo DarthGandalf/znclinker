@@ -83,17 +83,17 @@ sub OnChanMsg {
 	} unless $regexError;
 
 	if (my ($to) = $what=~/^!q\s+(\S+)/) {
-		$self->put_chan($chan=>"$to, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked http://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html");
+		$self->put_chan($chan=>"$to, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked https://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html");
 	}
 	if (my ($to) = $what=~/^!d\s+(\S+)/) {
 		$self->put_chan($chan=>"$to, when asking for help, be sure to provide as many details as possible: What did you try to do, how exactly did you try it (step by step), all error messages, ZNC version, bindhosts, etc. Without details, the only possible answer is '$to, you're doing something wrong.'");
 	}
 	if (my ($to) = $what=~/^!request(?:\s+(\S+))?/i) {
 		$to = $to // $nick;
-		$self->put_chan($chan=>"$to, ZNC is free software. Just install and use it. If you wanted a free BNC account instead, go somewhere else. http://wiki.znc.in/Providers may be a good start.");
+		$self->put_chan($chan=>"$to, ZNC is free software. Just install and use it. If you wanted a free BNC account instead, go somewhere else. https://wiki.znc.in/Providers may be a good start.");
 	}
 	if ($what=~/^!win/) {
-		$self->put_chan($chan=>'Installing ZNC on Windows: http://wiki.znc.in/Installation#Cygwin');
+		$self->put_chan($chan=>'Installing ZNC on Windows: https://wiki.znc.in/Installation#Cygwin');
 	}
 	if ($what eq '!help') {
 		$self->put_chan($chan=>'Need any help?');
@@ -105,7 +105,7 @@ sub OnChanMsg {
 		$q=~s/\003\d{0,2}(,\d{0,2})?//g;#color
 		$q=~s/[\x{2}\x{f}\x{16}\x{1f}]//g;
 		$q=~s/[\r\n]//g;
-		push @wiki, "http://wiki.znc.in/$q";
+		push @wiki, "https://wiki.znc.in/$q";
 	}
 
 	if (@wiki) {
@@ -114,7 +114,7 @@ sub OnChanMsg {
 	}
 
 	if ($what=~/(?:any|some)(?:one|body)\s+(?:alive|around|awake|here|home|in|round|there)\s*(?:\?|$)/i) {
-		$self->put_chan($chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked http://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is a false alarm.");
+		$self->put_chan($chan=>"Pointless question detected! $nick, we are not telepaths, please ask a concrete question and wait for an answer. Be sure that you have checked https://wiki.znc.in/FAQ first. You may want to read http://catb.org/~esr/faqs/smart-questions.html Sorry if this is a false alarm.");
 	}
 	if (my ($issue) = $what=~m@(?|\B#(\d{2,})|https://github.com/znc/znc/(?:issues|pull)/(\d+))@) {
 		if ($issue > 0) {
