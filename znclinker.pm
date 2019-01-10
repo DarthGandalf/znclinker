@@ -30,6 +30,7 @@ sub OnChanMsg {
 	$chan = $chan->GetName;
 
 	return $ZNC::CONTINUE if $nick eq 'travis-ci';
+	return $ZNC::CONTINUE if $nick eq 'BitBot';
 
 	my $now = time;
 	while (my ($key, $value) = each %{$self->{last}}) {
